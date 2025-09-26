@@ -1,71 +1,54 @@
+class Cell:
+
+    def __init__(self, value=0):
+        self.value = value
+        self.candidates = set()
+
 #region
-
-grid = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-#each type of group that needs to have 9 in each. Box goes left to right top to bottom, collumns left to right, rows top to bottom.
-boxes = [{1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9}]
-
-
-columns = [{1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9}]
-
-
-rows = [{1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},
-       {1, 2, 3, 4, 5, 6, 7, 8, 9},]
-
+grid = [
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
+    [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()]
+]
 #endregion
 
 def get_data():
     global grid
-    global empty_squares
-
-    print("Enter the data for each row from top to bottom")
-    print("Make them space seperated with a '0' for an empty space")
-
     for i in range(9):
-        temporary = input(f"Row {i}: ").split()
+        row = input(f"Enter data for Row{i+1}").split()
         for j in range(9):
-            grid[j] = int(temporary[j])
-            if grid[j] == 0:
-                empty_squares += 1
+            grid[i][j].value = int(row[j])
+            if grid[i][j].value != 0:
+                grid[i][j].candidates = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 def print_grid():
-   for row in grid:
-       print(*row, sep = " ")
+    for row in range(9):
+        printable_row = []
+        for i in range(9):
+            printable_row.append(grid[row][i].value)
+            if i in {2, 5}:
+                printable_row.append("|")
+        print(*printable_row, sep=" ")
+        if row in {2, 5}:
+            print("-"*23)
 
+def trim_candidates():
+    global grid
 
-empty_squares = 0
+    cols = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
+    blocks = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
+    for i in range(9):
+        row = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        for j in range(9):
+            if grid[i][j].value != 0:
+                row.remove(grid[i][j].value)
+                cols[j].remove(grid[i][j].value)
+                blocks[(((i+1)//3)+1)*(((j+1)//3)+1)-1].remove(grid[i][j].value)
 
-while empty_squares > 0:
-    pass
-    #will add actual logic here
+print_grid()
