@@ -1,3 +1,6 @@
+from string import printable
+
+
 class Cell:
 
     def __init__(self, value=0):
@@ -18,14 +21,61 @@ grid = [
 ]
 #endregion
 
+#initial functions, run only 1 time
+#region
 def get_data():
     global grid
+    global empty_squares
+
+    with open("sample.txt", "r") as puzzle_file:
+        for i in range(9):
+            # row = input(f"Enter data for Row{i+1}: ")
+            row = puzzle_file.readline()
+            for j in range(9):
+                grid[i][j].value = int(row[j])
+                if grid[i][j].value == 0:
+                    grid[i][j].candidates = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+                else:
+                    empty_squares += 1
+
+
+def trim_candidates():
+    global grid
+
+    cols = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
+    blocks = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
+    rows = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
     for i in range(9):
-        row = input(f"Enter data for Row{i+1}").split()
         for j in range(9):
-            grid[i][j].value = int(row[j])
             if grid[i][j].value != 0:
-                grid[i][j].candidates = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+                if grid[i][j].value in rows[i]:
+                    rows[i].remove(grid[i][j].value)
+                if grid[i][j].value in cols[j]:
+                    cols[j].remove(grid[i][j].value)
+                if grid[i][j].value in blocks[(((i//3))*3)+(j//3)]:
+                    blocks[(((i//3))*3)+(j//3)].remove(grid[i][j].value)
+    
+    for i in range(9):
+        for j in range(9):
+            if grid[i][j].value == 0:
+                    grid[i][j].candidates = rows[i].intersection(cols[j]).intersection(blocks[(((i//3))*3)+(j//3)])
+
+#endregion
+
+#Logic functions
+#region
+def fill_square(i, j, val):
+    grid[i][j].value = val
+    grid[i][j].candidates = set()
+    empty_squares -= 1
+
+def one_candidate():
+    for i in range(9):
+        for j in range(9):
+            if len(grid[i][j].candidates) == 1:
+                fill_square(i, j, grid[i][j].candidates.pop())
+
+#endregion
 
 def print_grid():
     for row in range(9):
@@ -38,17 +88,37 @@ def print_grid():
         if row in {2, 5}:
             print("-"*23)
 
-def trim_candidates():
-    global grid
+#this is for testing
+def print_candidates():
+    print()
+    for row in range(9):
+        printable_cell_row = [[" "]*35, [" "]*35, [" "]*35]
+        for i in range(3):
+            printable_cell_row[i][3] = "|"
+            printable_cell_row[i][7] = "|"
+            printable_cell_row[i][11] = "█"
+            printable_cell_row[i][15] = "|"
+            printable_cell_row[i][19] = "|"
+            printable_cell_row[i][23] = "█"
+            printable_cell_row[i][27] = "|"
+            printable_cell_row[i][31] = "|"
+        for i in range(9):#each cell
+            for candidate in range(1, 10):
+                if candidate in grid[row][i].candidates:
+                    printable_cell_row[(candidate-1)//3][(candidate-1)%3+(i*4)] = candidate
+        
+        for printable_row in printable_cell_row:
+            print(*printable_row, sep=" ")
+        if row in {2, 5}:
+            print("█"*70)
+        elif row != 8:
+            print("-"*22+"█"+"-"*23+"█"+"-"*22)
+    print()
 
-    cols = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
-    blocks = [{1, 2, 3, 4, 5, 6, 7, 8, 9} for _ in range(9)]
-    for i in range(9):
-        row = {1, 2, 3, 4, 5, 6, 7, 8, 9}
-        for j in range(9):
-            if grid[i][j].value != 0:
-                row.remove(grid[i][j].value)
-                cols[j].remove(grid[i][j].value)
-                blocks[(((i+1)//3)+1)*(((j+1)//3)+1)-1].remove(grid[i][j].value)
 
-print_grid()
+empty_squares = 0
+
+get_data()
+trim_candidates()
+# print_grid()
+print_candidates()
