@@ -1,5 +1,5 @@
-from string import printable
-
+import os
+import time
 
 class Cell:
 
@@ -62,26 +62,16 @@ def trim_candidates():
 
 #endregion
 
-#Logic functions
+#print functions
 #region
-def fill_square(i, j, val):
-    grid[i][j].value = val
-    grid[i][j].candidates = set()
-    empty_squares -= 1
-
-def one_candidate():
-    for i in range(9):
-        for j in range(9):
-            if len(grid[i][j].candidates) == 1:
-                fill_square(i, j, grid[i][j].candidates.pop())
-
-#endregion
-
-def print_grid():
+def print_board():
     for row in range(9):
         printable_row = []
         for i in range(9):
-            printable_row.append(grid[row][i].value)
+            if grid[row][i].value == 0:
+                printable_row.append('_')
+            else:
+                printable_row.append(grid[row][i].value)
             if i in {2, 5}:
                 printable_row.append("|")
         print(*printable_row, sep=" ")
@@ -114,11 +104,47 @@ def print_candidates():
         elif row != 8:
             print("-"*22+"█"+"-"*23+"█"+"-"*22)
     print()
+#endregion
 
+#Logic functions
+#region
+def fill_square(i, j, val):
+    global empty_squares
+
+    grid[i][j].value = val
+    grid[i][j].candidates = set()
+    empty_squares -= 1
+
+def one_candidate():
+    changed = False
+
+    for i in range(9):
+        for j in range(9):
+            if len(grid[i][j].candidates) == 1:
+                fill_square(i, j, grid[i][j].candidates.pop())
+                trim_candidates()
+                changed = True
+    return changed
+
+
+#endregion    
 
 empty_squares = 0
 
 get_data()
 trim_candidates()
-# print_grid()
+# print_board()
 print_candidates()
+
+try:
+    while empty_squares > 0:
+        while True:#one place in a group
+            while one_candidate():
+                time.sleep(1)
+                os.system('clear')
+                print_candidates()
+        #overlap block and row/col
+
+except KeyboardInterrupt:
+    os.system('clear')
+    print_board()
