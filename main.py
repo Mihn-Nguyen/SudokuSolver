@@ -65,6 +65,8 @@ def trim_candidates():
 #print functions
 #region
 def print_board():
+    for _ in range(6):
+        print()
     for row in range(9):
         printable_row = []
         for i in range(9):
@@ -80,7 +82,8 @@ def print_board():
 
 #this is for testing
 def print_candidates():
-    print()
+    for _ in range(6):
+        print()
     for row in range(9):
         printable_cell_row = [[" "]*35, [" "]*35, [" "]*35]
         for i in range(3):
@@ -126,6 +129,40 @@ def one_candidate():
                 changed = True
     return changed
 
+def one_place_in_group():
+    cols = [[(-1, -1)]*9 for _ in range(9)]
+    blocks = [[(-1, -1)]*9 for _ in range(9)]
+    rows = [[(-1, -1)]*9 for _ in range(9)]
+
+    changed = False
+    for i in range(9):
+        for j in range(9):
+            for candidate in grid[i][j].candidates:
+                if rows[i][candidate-1] == (-1, -1):
+                    rows[i][candidate-1] = (i, j)
+                else:
+                    rows[i][candidate-1] = (-2, -2)
+
+                if cols[j][candidate-1] == (-1, -1):
+                    cols[j][candidate-1] = (i, j)
+                else:
+                    cols[j][candidate-1] = (-2, -2)
+
+                if blocks[(((i//3))*3)+(j//3)][candidate-1] == (-1, -1):
+                    blocks[(((i//3))*3)+(j//3)][candidate-1] = (i, j)
+                else:
+                    blocks[(((i//3))*3)+(j//3)][candidate-1] = (-2, -2)
+
+    for row in range(9):
+        for num in range(9):
+            if rows[row][num][0] > -1:
+                fill_square(rows[row][num][0], rows[row][num][1], num+1)
+                changed = True
+
+    trim_candidates()
+
+    return changed
+
 
 #endregion    
 
@@ -133,18 +170,26 @@ empty_squares = 0
 
 get_data()
 trim_candidates()
-# print_board()
-print_candidates()
+print_board()
+# print_candidates()
 
 try:
     while empty_squares > 0:
-        while True:#one place in a group
+        while one_place_in_group():#one place in a group
             while one_candidate():
-                time.sleep(1)
+                # time.sleep(1)
                 os.system('clear')
-                print_candidates()
+                print_board()
+            # time.sleep(1)
+            os.system('clear')
+            print_board()
         #overlap block and row/col
+        # print("HI")
+        break
 
 except KeyboardInterrupt:
-    os.system('clear')
-    print_board()
+    # os.system('clear')
+    pass
+finally:
+    # print_board()
+    pass
