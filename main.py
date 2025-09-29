@@ -7,7 +7,7 @@ class Cell:
         self.value = value
         self.candidates = set()
 
-#region
+
 grid = [
     [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
     [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
@@ -19,7 +19,6 @@ grid = [
     [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()],
     [Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell(), Cell()]
 ]
-#endregion
 
 #initial functions, run only 1 time
 #region
@@ -65,8 +64,8 @@ def trim_candidates():
 #print functions
 #region
 def print_board():
-    for _ in range(6):
-        print()
+    print()
+
     for row in range(9):
         printable_row = []
         for i in range(9):
@@ -82,8 +81,8 @@ def print_board():
 
 #this is for testing
 def print_candidates():
-    for _ in range(6):
-        print()
+    print()
+
     for row in range(9):
         printable_cell_row = [[" "]*35, [" "]*35, [" "]*35]
         for i in range(3):
@@ -170,26 +169,28 @@ empty_squares = 0
 
 get_data()
 trim_candidates()
+
 print_board()
 # print_candidates()
 
 try:
     while empty_squares > 0:
         while one_place_in_group():#one place in a group
+            os.system('clear')
+            os.system('clear')
             while one_candidate():
-                # time.sleep(1)
+                time.sleep(1)
                 os.system('clear')
                 print_board()
-            # time.sleep(1)
+            time.sleep(1)
             os.system('clear')
             print_board()
-        #overlap block and row/col
-        # print("HI")
+        print_candidates()
         break
 
 except KeyboardInterrupt:
     # os.system('clear')
     pass
 finally:
-    # print_board()
-    pass
+    print_candidates()
+    exit(0)
