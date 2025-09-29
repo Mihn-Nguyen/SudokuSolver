@@ -26,16 +26,11 @@ def get_data():
     global grid
     global empty_squares
 
-    with open("sample.txt", "r") as puzzle_file:
-        for i in range(9):
-            # row = input(f"Enter data for Row{i+1}: ")
-            row = puzzle_file.readline()
-            for j in range(9):
-                grid[i][j].value = int(row[j])
-                if grid[i][j].value == 0:
-                    grid[i][j].candidates = {1, 2, 3, 4, 5, 6, 7, 8, 9}
-                else:
-                    empty_squares += 1
+    for i in range(9):
+        for j in range(9):
+            if grid[i][j].value == 0:
+                grid[i][j].candidates = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+                empty_squares += 1
 
 
 def trim_candidates():
@@ -166,31 +161,18 @@ def one_place_in_group():
 #endregion    
 
 empty_squares = 0
+def mainloop():
 
-get_data()
-trim_candidates()
-
-print_board()
-# print_candidates()
-
-try:
-    while empty_squares > 0:
-        while one_place_in_group():#one place in a group
-            os.system('clear')
-            os.system('clear')
+    get_data()
+    trim_candidates()
+    try:
+        while empty_squares > 0:
+            while one_place_in_group():
+                continue
             while one_candidate():
-                time.sleep(1)
-                os.system('clear')
-                print_board()
-            time.sleep(1)
-            os.system('clear')
-            print_board()
-        print_candidates()
-        break
+                continue
 
-except KeyboardInterrupt:
-    # os.system('clear')
-    pass
-finally:
-    print_candidates()
-    exit(0)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        return grid
