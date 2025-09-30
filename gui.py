@@ -15,7 +15,7 @@ class Table:
             for j in range(9):
                 sv = tk.StringVar()
                 sv.set(" ")
-                e = tk.Entry(root, width=3, bg='black', fg='deepskyblue', font=('Arial', 16, 'bold'), justify='center', textvariable=sv)
+                e = tk.Entry(root, width=3, bg='gray15', fg='deepskyblue', font=('Arial', 16, 'bold'), justify='center', textvariable=sv)
                 e.grid(row=i, column=j)
                 row_vars.append(sv)
                 row_entries.append(e)
@@ -49,7 +49,7 @@ class Table:
         self.vars[self.current_row][0] = tk.StringVar()
         self.vars[self.current_row][0].set("")
 
-        self.entries[self.current_row][0] = tk.Entry(root, width=3, bg='black', fg='deepskyblue', font=('Arial', 16, 'bold'), justify='center', textvariable=self.vars[self.current_row][0])
+        self.entries[self.current_row][0] = tk.Entry(root, width=3, bg='gray15', fg='deepskyblue', font=('Arial', 16, 'bold'), justify='center', textvariable=self.vars[self.current_row][0])
         self.entries[self.current_row][0].grid(row=self.current_row, column=0)
 
         self.entries[self.current_row][0].master.update_idletasks()
