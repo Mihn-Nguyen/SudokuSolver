@@ -1,8 +1,9 @@
 import tkinter as tk
 import main
+import pyperclip
 
 class Table:
-    def __init__(self, root, lst):
+    def __init__(self, root):
         self.vars = []
         self.entries = []
         self.current_row = 0
@@ -13,12 +14,14 @@ class Table:
             row_entries = []
             for j in range(9):
                 sv = tk.StringVar()
-                sv.set(lst[i][j])
-                e = tk.Entry(root, width=3, fg='blue', font=('Arial', 16, 'bold'), justify='center', textvariable=sv)
+                sv.set(" ")
+                e = tk.Entry(root, width=3, bg='black', fg='deepskyblue', font=('Arial', 16, 'bold'), justify='center', textvariable=sv)
                 e.grid(row=i, column=j)
                 row_vars.append(sv)
                 row_entries.append(e)
                 e.bind("<FocusIn>", self.on_focus_in)
+                e.bind("<Command-v>", self.on_paste)
+                e.bind("<Control-v>", self.on_paste)
             self.vars.append(row_vars)
             self.entries.append(row_entries)
 
@@ -37,6 +40,22 @@ class Table:
                     self.current_row = i
                     self.current_col = j
                     break
+
+    def on_paste(self, event):
+        pasted_text = pyperclip.paste()
+
+        self.entries[self.current_row][0].grid_forget()
+
+        self.vars[self.current_row][0] = tk.StringVar()
+        self.vars[self.current_row][0].set("")
+
+        self.entries[self.current_row][0] = tk.Entry(root, width=3, bg='black', fg='deepskyblue', font=('Arial', 16, 'bold'), justify='center', textvariable=self.vars[self.current_row][0])
+        self.entries[self.current_row][0].grid(row=self.current_row, column=0)
+
+        self.entries[self.current_row][0].master.update_idletasks()
+
+        for i in range(9):
+            self.vars[self.current_row][i].set(pasted_text[i])
 
     def move_up(self, event):
         if self.current_row > 0:
@@ -70,12 +89,23 @@ class Table:
         main.mainloop()
         for i in range(9):
             for j in range(9):
+                try:
+                    num = int(self.vars[i][j].get())
+                    if num > 0:
+                        self.entries[i][j].config(fg="deepskyblue")
+                        self.entries[i][j].grid(row=i, column=j)
+                    else:
+                        self.entries[i][j].config(fg="gold")
+                        self.entries[i][j].grid(row=i, column=j)
+
+                except ValueError:
+                    self.entries[i][j].config(fg="gold")
+                    self.entries[i][j].grid(row=i, column=j)
                 self.vars[i][j].set(main.grid[i][j].value)
 
 root = tk.Tk()
 root.title("PyDoku")
+root.attributes('-topmost', True)
 
-lst = [[" "] * 9 for _ in range(9)]
-
-table = Table(root, lst)
+table = Table(root)
 root.mainloop()
